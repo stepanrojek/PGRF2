@@ -32,18 +32,25 @@ public class TriangleRasterizer {
             double tAB = (y - ay) / (double) (by - ay);
             int xAB = (int) Math.round((1 - tAB) * ax + tAB * bx);
             // TODO: spočítat zAB
+            double zAB = (1 - tAB) * az + tAB * bz;
 
             // Hrana AC
             double tAC = (y - ay) / (double) (cy - ay);
             int xAC = (int) Math.round((1 - tAC) * ax + tAC * cx);
             // TODO: spočítat zAC
+            double zAC = (1 - tAC) * az + tAC * cz;
 
             // TODO: kontrola, že xAB < xAC, pokud ne, prohazuji
-
+            if (xAB > xAC) {
+                int tmp = xAB;
+                xAB = xAC;
+                xAC = tmp;
+            }
             // napsat cyklus od xAB do xAC a obarvit pixely
             for (int x = xAB; x <= xAC; x++) {
                 double t = (x - xAB) / (double) (xAC - xAB);
                 // TODO: spočítat finální Z
+                double z = (1 - t) * zAB + t * zAC;
 
                 zBuffer.setPixelWithZTest(x, y, 0.5, new Col(0xff0000));
             }
