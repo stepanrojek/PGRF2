@@ -24,38 +24,67 @@ public class TriangleRasterizer {
         int cy = (int) Math.round(c.getY());
         double cz = c.getZ();
 
-        // TODO: Setřídit podle y -> Ay <= By <= Cy (prohazovat všechny souřadnice bodů)
+        // TODO: Setridit podle y -> Ay <= By <= Cy (prohazovat vsechny souradnice bodu)
 
         // 1. část trojúhelníku
         for (int y = ay; y <= by; y++) {
             // Hrana AB
             double tAB = (y - ay) / (double) (by - ay);
             int xAB = (int) Math.round((1 - tAB) * ax + tAB * bx);
-            // TODO: spočítat zAB
+            //spočítat zAB
             double zAB = (1 - tAB) * az + tAB * bz;
 
             // Hrana AC
             double tAC = (y - ay) / (double) (cy - ay);
             int xAC = (int) Math.round((1 - tAC) * ax + tAC * cx);
-            // TODO: spočítat zAC
+            //spočítat zAC
             double zAC = (1 - tAC) * az + tAC * cz;
 
-            // TODO: kontrola, že xAB < xAC, pokud ne, prohazuji
+            // Kontrola, ze xAB < xAC, pokud ne, prohazuji
             if (xAB > xAC) {
                 int tmp = xAB;
                 xAB = xAC;
                 xAC = tmp;
-            }
-            // napsat cyklus od xAB do xAC a obarvit pixely
-            for (int x = xAB; x <= xAC; x++) {
-                double t = (x - xAB) / (double) (xAC - xAB);
-                // TODO: spočítat finální Z
-                double z = (1 - t) * zAB + t * zAC;
 
-                zBuffer.setPixelWithZTest(x, y, 0.5, new Col(0xff0000));
+                double tmpZ = zAB;
+                zAB = zAC;
+                zAC = tmpZ;
+            }
+
+            for (int x = xAB; x <= xAC; x++) {
+                double t = xAB == xAC ? 0.0 : (x - xAB) / (double) (xAC - xAB);
+                double z = (1 - t) * zAB + t * zAC;
+                zBuffer.setPixelWithZTest(x, y, z, new Col(0xff0000));
             }
         }
 
-        // TODO: 2. část trojúhelníku
+        // 2. cast trojuhelniku
+        for (int y = by + 1; y <= cy; y++) {
+            // Hrana BC
+            double tBC = (y - by) / (double) (cy - by);
+            int xBC = (int) Math.round((1 - tBC) * bx + tBC * cx);
+            double zBC = (1 - tBC) * bz + tBC * cz;
+
+            // Hrana AC
+            double tAC = (y - ay) / (double) (cy - ay);
+            int xAC = (int) Math.round((1 - tAC) * ax + tAC * cx);
+            double zAC = (1 - tAC) * az + tAC * cz;
+
+            if (xBC > xAC) {
+                int tmp = xBC;
+                xBC = xAC;
+                xAC = tmp;
+
+                double tmpZ = zBC;
+                zBC = zAC;
+                zAC = tmpZ;
+            }
+
+            for (int x = xBC; x <= xAC; x++) {
+                double t = xBC == xAC ? 0.0 : (x - xBC) / (double) (xAC - xBC);
+                double z = (1 - t) * zBC + t * zAC;
+                zBuffer.setPixelWithZTest(x, y, z, new Col(0xff0000));
+            }
+        }
     }
 }

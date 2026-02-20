@@ -11,33 +11,41 @@ public class DepthBuffer implements Raster<Double>{
         this.width = width;
         this.height = height;
         this.buffer = new double[width][height];
+        clear();
     }
 
     @Override
     public void setValue(int x, int y, Double value) {
-        // TODO: implementovat
+        if (x < 0 || y < 0 || x >= width || y >= height) {
+            return;
+        }
+        buffer[x][y] = value;
     }
 
     @Override
     public Optional<Double> getValue(int x, int y) {
-        // TODO: implementovat
-        return Optional.empty();
+        if (x < 0 || y < 0 || x >= width || y >= height) {
+            return Optional.empty();
+        }
+        return Optional.of(buffer[x][y]);
     }
 
     @Override
     public int getWidth() {
-        // TODO: implementovat
-        return 0;
+        return width;
     }
 
     @Override
     public int getHeight() {
-        // TODO: implementovat
-        return 0;
+        return height;
     }
 
     @Override
     public void clear() {
-        // TODO: implementovat
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                buffer[x][y] = Double.POSITIVE_INFINITY;
+            }
+        }
     }
 }

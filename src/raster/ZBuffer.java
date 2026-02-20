@@ -2,6 +2,8 @@ package raster;
 
 import transforms.Col;
 
+import java.util.Optional;
+
 public class ZBuffer {
     private final Raster<Col> imageBuffer;
     private final Raster<Double> depthBuffer;
@@ -12,13 +14,12 @@ public class ZBuffer {
     }
 
     public void setPixelWithZTest(int x, int y, double z, Col color) {
-        // TODO: načtu hodnotu z depth bufferu
-        // TODO: porovnám hodnotu s hodnout Z, která přišla do metody
-        // TODO: podle podmíny
-        // TODO: 1. nedělám nic
-        // TODO: 2. obarvím pixel, updatuju depth buffer
+        Optional<Double> currentDepth = depthBuffer.getValue(x, y);
+        if (currentDepth.isPresent() && currentDepth.get() <= z) {
+            return;
+        }
 
         imageBuffer.setValue(x, y, color);
+        depthBuffer.setValue(x, y, z);
     }
-
 }
