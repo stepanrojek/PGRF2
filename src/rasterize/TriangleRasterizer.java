@@ -3,6 +3,7 @@ package rasterize;
 import model.Vertex;
 import raster.ZBuffer;
 import transforms.Col;
+import util.Lerp;
 
 public class TriangleRasterizer {
     private final ZBuffer zBuffer;
@@ -26,35 +27,30 @@ public class TriangleRasterizer {
 
         // TODO: Setridit podle y -> Ay <= By <= Cy (prohazovat vsechny souradnice bodu)
 
+        Lerp<Vertex> lerp = new Lerp<>();
+
         // 1. část trojúhelníku
         for (int y = ay; y <= by; y++) {
             // Hrana AB
             double tAB = (y - ay) / (double) (by - ay);
-            int xAB = (int) Math.round((1 - tAB) * ax + tAB * bx);
+            Vertex ab = lerp.lerp(a, b, tAB);
             //spočítat zAB
             double zAB = (1 - tAB) * az + tAB * bz;
 
             // Hrana AC
             double tAC = (y - ay) / (double) (cy - ay);
-            int xAC = (int) Math.round((1 - tAC) * ax + tAC * cx);
+            Vertex ac = lerp.lerp(a, c, tAC);
             //spočítat zAC
             double zAC = (1 - tAC) * az + tAC * cz;
 
             // Kontrola, ze xAB < xAC, pokud ne, prohazuji
-            if (xAB > xAC) {
-                int tmp = xAB;
-                xAB = xAC;
-                xAC = tmp;
 
-                double tmpZ = zAB;
-                zAB = zAC;
-                zAC = tmpZ;
-            }
 
-            for (int x = xAB; x <= xAC; x++) {
-                double t = xAB == xAC ? 0.0 : (x - xAB) / (double) (xAC - xAB);
-                double z = (1 - t) * zAB + t * zAC;
-                zBuffer.setPixelWithZTest(x, y, z, new Col(0xff0000));
+            for (int x = (int)Math.round(ab.getX()); x <= (int)Math.round(ac.getX()); x++) {
+                double t = (x - ab.getX()) / (ac.getX() - ab.getX());
+                Vertex pixel = lerp.lerp(ab, ac, t);
+
+                zBuffer.setPixelWithZTest(x, y, pixel.getZ(), pixel.getCol());
             }
         }
 
