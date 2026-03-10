@@ -5,6 +5,7 @@ import model.Vertex;
 import rasterize.LineRasterizer;
 import rasterize.TriangleRasterizer;
 import solid.Solid;
+import util.Lerp;
 
 public class RendererSolid {
     private LineRasterizer lineRasterizer;
@@ -61,6 +62,35 @@ public class RendererSolid {
                         // TODO: vrcholy pronásobím MVP
 
                         // TODO: ořezání
+                        //TODO:1. Fast clip
+                        //2. Ořezání podle z
+                        //TODO: proházet vrcholy podle z od max po min
+                        double zMin = 0;
+                        if(a.getZ() < zMin)
+                            continue;
+
+                        if(b.getZ() < zMin) {
+                            Lerp<Vertex> lerp = new Lerp<>();
+
+                            double tAB = (zMin - a.getZ()) / (b.getZ() - a.getZ());
+                            double tAC = (zMin - a.getZ()) / (c.getZ() - a.getZ());
+
+                            Vertex ab = lerp.lerp(a, b, tAB);
+                            Vertex ac = lerp.lerp(a, c, tAC);
+
+                            b = ab;
+                            c = ac;
+                            //TODO: najit novy trojuhelnik
+                            //TODO: hledam vrchol AB, AC
+                            //TODO: musim spocitat interpolacni koeficienty a pak najit vrcholy
+                            //Vertex ab
+                            //Vertex ac
+                        }
+
+                        if(c.getZ() < zMin) {
+                            //TODO: najit 2 nove trojuhelniky
+                            //TODO: rasterizovat
+                        }
 
                         // TODO: dehomog
 

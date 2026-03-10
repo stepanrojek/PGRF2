@@ -2,6 +2,9 @@ package rasterize;
 
 import model.Vertex;
 import raster.ZBuffer;
+import shader.Shader;
+import shader.ShaderConstant;
+import shader.ShaderInterpolated;
 import transforms.Col;
 import util.Lerp;
 
@@ -13,6 +16,9 @@ public class TriangleRasterizer {
     }
 
     public void rasterize(Vertex a, Vertex b, Vertex c) {
+        //Shader shader = new ShaderConstant();
+        Shader shader = new ShaderInterpolated();
+
         int ax = (int) Math.round(a.getX());
         int ay = (int) Math.round(a.getY());
         double az = a.getZ();
@@ -50,7 +56,7 @@ public class TriangleRasterizer {
                 double t = (x - ab.getX()) / (ac.getX() - ab.getX());
                 Vertex pixel = lerp.lerp(ab, ac, t);
 
-                zBuffer.setPixelWithZTest(x, y, pixel.getZ(), pixel.getCol());
+                zBuffer.setPixelWithZTest(x, y, pixel.getZ(), shader.getColor(pixel));
             }
         }
 

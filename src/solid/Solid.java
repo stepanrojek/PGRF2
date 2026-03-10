@@ -2,6 +2,8 @@ package solid;
 
 import model.Part;
 import model.Vertex;
+import shader.Shader;
+import shader.ShaderConstant;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,6 +13,7 @@ public abstract class Solid {
     protected final List<Vertex> vertexBuffer = new ArrayList<>();
     protected final List<Integer> indexBuffer = new ArrayList<>();
     protected final List<Part> partBuffer = new ArrayList<>();
+    protected Shader shader = new ShaderConstant();
 
     public List<Vertex> getVertexBuffer() {
         return vertexBuffer;
@@ -27,4 +30,13 @@ public abstract class Solid {
     public void addIndices(Integer... indices) {
         indexBuffer.addAll(Arrays.asList(indices));
     }
+
+    public Shader getShader() {
+        return shader;
+    }
+
+    public void setShader(Shader shader) {
+        this.shader = shader;
+    }
 }
+
